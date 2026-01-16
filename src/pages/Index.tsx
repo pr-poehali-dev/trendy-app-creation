@@ -9,10 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import CoinClickerGame from '@/components/CoinClickerGame';
+import { useToast } from '@/hooks/use-toast';
 
 type Screen = 'home' | 'profile' | 'games' | 'shop' | 'achievements' | 'leaderboard' | 'settings';
 
 const Index = () => {
+  const { toast } = useToast();
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [coins, setCoins] = useState(1250);
   const [gems, setGems] = useState(48);
@@ -20,12 +23,14 @@ const Index = () => {
   const [xp, setXp] = useState(750);
   const [notifications, setNotifications] = useState(true);
   const [sound, setSound] = useState(true);
+  const [showCoinClicker, setShowCoinClicker] = useState(false);
 
   const games = [
-    { id: 1, name: 'Космический рейд', icon: 'Rocket', color: 'primary', players: 1248, prize: 500 },
-    { id: 2, name: 'Битва героев', icon: 'Swords', color: 'secondary', players: 892, prize: 750 },
-    { id: 3, name: 'Быстрый квиз', icon: 'Zap', color: 'accent', players: 2103, prize: 250 },
-    { id: 4, name: 'Турнир гонок', icon: 'Trophy', color: 'primary', players: 654, prize: 1000 },
+    { id: 1, name: 'Кликер монет', icon: 'Coins', color: 'accent', players: 3542, prize: 200, isPlayable: true },
+    { id: 2, name: 'Космический рейд', icon: 'Rocket', color: 'primary', players: 1248, prize: 500 },
+    { id: 3, name: 'Битва героев', icon: 'Swords', color: 'secondary', players: 892, prize: 750 },
+    { id: 4, name: 'Быстрый квиз', icon: 'Zap', color: 'accent', players: 2103, prize: 250 },
+    { id: 5, name: 'Турнир гонок', icon: 'Trophy', color: 'primary', players: 654, prize: 1000 },
   ];
 
   const achievements = [
@@ -59,6 +64,27 @@ const Index = () => {
       case 'legendary': return 'bg-accent text-accent-foreground';
       default: return 'bg-muted';
     }
+  };
+
+  const handlePlayGame = (gameId: number) => {
+    const game = games.find(g => g.id === gameId);
+    if (game?.isPlayable) {
+      setShowCoinClicker(true);
+    } else {
+      toast({
+        title: 'Скоро!',
+        description: 'Эта игра пока в разработке 🎮',
+      });
+    }
+  };
+
+  const handleEarnCoins = (amount: number) => {
+    setCoins(prev => prev + amount);
+    setXp(prev => prev + Math.floor(amount / 2));
+    toast({
+      title: '🎉 Награда получена!',
+      description: `Вы заработали ${amount} монет и ${Math.floor(amount / 2)} XP!`,
+    });
   };
 
   return (
@@ -134,7 +160,11 @@ const Index = () => {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <Button className="w-full gradient-purple-pink hover:opacity-90 transition-opacity" size="lg">
+                      <Button 
+                        className="w-full gradient-purple-pink hover:opacity-90 transition-opacity" 
+                        size="lg"
+                        onClick={() => handlePlayGame(game.id)}
+                      >
                         <Icon name="Play" size={18} className="mr-2" />
                         Играть
                       </Button>
@@ -310,7 +340,11 @@ const Index = () => {
                             </span>
                           </div>
                         </div>
-                        <Button size="lg" className="gradient-purple-pink hover:opacity-90 transition-opacity">
+                        <Button 
+                          size="lg" 
+                          className="gradient-purple-pink hover:opacity-90 transition-opacity"
+                          onClick={() => handlePlayGame(game.id)}
+                        >
                           <Icon name="Play" size={20} className="mr-2" />
                           Играть
                         </Button>
@@ -630,6 +664,13 @@ const Index = () => {
           </div>
         </div>
       </nav>
+
+      {showCoinClicker && (
+        <CoinClickerGame
+          onEarnCoins={handleEarnCoins}
+          onClose={() => setShowCoinClicker(false)}
+        />
+      )}
     </div>
   );
 };

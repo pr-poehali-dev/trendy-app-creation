@@ -10,6 +10,9 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import CoinClickerGame from '@/components/CoinClickerGame';
+import QuizGame from '@/components/QuizGame';
+import MemoryGame from '@/components/MemoryGame';
+import SpaceRaidGame from '@/components/SpaceRaidGame';
 import { useToast } from '@/hooks/use-toast';
 
 type Screen = 'home' | 'profile' | 'games' | 'shop' | 'achievements' | 'leaderboard' | 'settings';
@@ -24,13 +27,15 @@ const Index = () => {
   const [notifications, setNotifications] = useState(true);
   const [sound, setSound] = useState(true);
   const [showCoinClicker, setShowCoinClicker] = useState(false);
+  const [showQuizGame, setShowQuizGame] = useState(false);
+  const [showMemoryGame, setShowMemoryGame] = useState(false);
+  const [showSpaceRaid, setShowSpaceRaid] = useState(false);
 
   const games = [
     { id: 1, name: 'Кликер монет', icon: 'Coins', color: 'accent', players: 3542, prize: 200, isPlayable: true },
-    { id: 2, name: 'Космический рейд', icon: 'Rocket', color: 'primary', players: 1248, prize: 500 },
-    { id: 3, name: 'Битва героев', icon: 'Swords', color: 'secondary', players: 892, prize: 750 },
-    { id: 4, name: 'Быстрый квиз', icon: 'Zap', color: 'accent', players: 2103, prize: 250 },
-    { id: 5, name: 'Турнир гонок', icon: 'Trophy', color: 'primary', players: 654, prize: 1000 },
+    { id: 2, name: 'Космический рейд', icon: 'Rocket', color: 'primary', players: 1248, prize: 500, isPlayable: true },
+    { id: 3, name: 'Быстрый квиз', icon: 'Zap', color: 'secondary', players: 2103, prize: 250, isPlayable: true },
+    { id: 4, name: 'Мемори', icon: 'Brain', color: 'primary', players: 1876, prize: 300, isPlayable: true },
   ];
 
   const achievements = [
@@ -69,7 +74,25 @@ const Index = () => {
   const handlePlayGame = (gameId: number) => {
     const game = games.find(g => g.id === gameId);
     if (game?.isPlayable) {
-      setShowCoinClicker(true);
+      switch (gameId) {
+        case 1:
+          setShowCoinClicker(true);
+          break;
+        case 2:
+          setShowSpaceRaid(true);
+          break;
+        case 3:
+          setShowQuizGame(true);
+          break;
+        case 4:
+          setShowMemoryGame(true);
+          break;
+        default:
+          toast({
+            title: 'Скоро!',
+            description: 'Эта игра пока в разработке 🎮',
+          });
+      }
     } else {
       toast({
         title: 'Скоро!',
@@ -669,6 +692,27 @@ const Index = () => {
         <CoinClickerGame
           onEarnCoins={handleEarnCoins}
           onClose={() => setShowCoinClicker(false)}
+        />
+      )}
+
+      {showQuizGame && (
+        <QuizGame
+          onEarnCoins={handleEarnCoins}
+          onClose={() => setShowQuizGame(false)}
+        />
+      )}
+
+      {showMemoryGame && (
+        <MemoryGame
+          onEarnCoins={handleEarnCoins}
+          onClose={() => setShowMemoryGame(false)}
+        />
+      )}
+
+      {showSpaceRaid && (
+        <SpaceRaidGame
+          onEarnCoins={handleEarnCoins}
+          onClose={() => setShowSpaceRaid(false)}
         />
       )}
     </div>
